@@ -69,10 +69,7 @@ void main() {
 
   test('cache keys snapshot mutable request headers', () {
     final headers = <String, String>{'Authorization': 'old'};
-    final loader = SvgNetworkLoader(
-      'https://example.com/logo.svg',
-      headers: headers,
-    );
+    final loader = SvgNetworkLoader('https://example.com/logo.svg', headers: headers);
     final SvgCacheKey original = loader.cacheKey(null);
 
     headers['Authorization'] = 'new';
