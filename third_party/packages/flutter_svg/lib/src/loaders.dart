@@ -473,9 +473,14 @@ class _NetworkLoaderCacheKey {
   final String url;
   final Map<String, String>? headers;
   final http.Client? httpClient;
+  late final int _hashCode = Object.hash(
+    url,
+    _headersHashCode(headers),
+    identityHashCode(httpClient),
+  );
 
   @override
-  int get hashCode => Object.hash(url, _headersHashCode(headers), httpClient);
+  int get hashCode => _hashCode;
 
   @override
   bool operator ==(Object other) {
@@ -543,7 +548,13 @@ class SvgNetworkLoader extends SvgLoader<Uint8List> {
   }
 
   @override
-  int get hashCode => Object.hash(url, _headersHashCode(headers), theme, colorMapper, _httpClient);
+  int get hashCode => Object.hash(
+    url,
+    _headersHashCode(headers),
+    theme,
+    colorMapper,
+    identityHashCode(_httpClient),
+  );
 
   @override
   bool operator ==(Object other) {
