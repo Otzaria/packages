@@ -1,8 +1,17 @@
-## 2.3.3
+## 2.4.0
 
 * Avoids sending asset bundles, HTTP clients, or other loader state across
   compute isolates. Built-in loaders retain UTF-8 decoding and file I/O on the
   isolate while passing only the required SVG source and compile options.
+* Uses the globally configured `SvgPicture.defaultPlaceholderBuilder` when a
+  widget does not supply its own placeholder builder, and fixes the
+  `clipBehavior` diagnostic's default value.
+* Reuses decoded SVGs for equivalent HTTP request headers regardless of map
+  allocation or insertion order, while isolating distinct injected HTTP clients
+  and protecting cached keys from later header-map mutations.
+* Limits retained compiled SVG data to 32 MiB by default, evicting the LRU
+  entries when either the entry count or byte budget is exceeded. Both limits
+  are configurable and byte usage is exposed for diagnostics.
 * Removes failed SVG decodes from the pending cache so that transient failures
   can be retried, and prevents invalidated pending loads from repopulating the
   cache after `clear` or `evict`.
