@@ -56,8 +56,8 @@ class Cache {
 
   /// Evicts a single entry from the cache, returning true if successful.
   bool evict(Object key) {
-    final bool hadPending = _pending.remove(key) != null;
-    final bool hadCached = _cache.remove(key) != null;
+    final hadPending = _pending.remove(key) != null;
+    final hadCached = _cache.remove(key) != null;
     return hadPending || hadCached;
   }
 
@@ -70,7 +70,7 @@ class Cache {
     return evict(key);
   }
 
-  /// Returns the previously cached [PictureStream] for the given key, if available;
+  /// Returns the previously cached [ByteData] for the given key, if available;
   /// if not, calls the given callback to obtain it first. In either case, the
   /// key is moved to the "most recently used" position.
   ///
@@ -91,7 +91,7 @@ class Cache {
     }
 
     final Future<ByteData> future = loader();
-    final _PendingLoad request = _PendingLoad(future);
+    final request = _PendingLoad(future);
     _pending[key] = request;
     // Observe both outcomes without changing the Future returned to callers.
     // An error must not poison subsequent loads or create an unhandled error
