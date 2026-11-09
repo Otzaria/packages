@@ -1,5 +1,8 @@
 ## 2.4.0
 
+* Avoids sending asset bundles, HTTP clients, or other loader state across
+  compute isolates. Built-in loaders retain UTF-8 decoding and file I/O on the
+  isolate while passing only the required SVG source and compile options.
 * Uses the globally configured `SvgPicture.defaultPlaceholderBuilder` when a
   widget does not supply its own placeholder builder, and fixes the
   `clipBehavior` diagnostic's default value.
