@@ -17,7 +17,9 @@ void main() {
     SvgPicture.defaultPlaceholderBuilder = originalBuilder;
   });
 
-  testWidgets('the global default placeholder is shown during loading', (WidgetTester tester) async {
+  testWidgets('the global default placeholder is shown during loading', (
+    WidgetTester tester,
+  ) async {
     final response = Completer<http.Response>();
     SvgPicture.defaultPlaceholderBuilder = (BuildContext context) {
       return const SizedBox(key: ValueKey<String>('global-placeholder'));
