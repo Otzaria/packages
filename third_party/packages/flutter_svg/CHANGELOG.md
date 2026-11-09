@@ -1,8 +1,14 @@
-## 2.3.3
+## 2.4.0
 
 * Uses the globally configured `SvgPicture.defaultPlaceholderBuilder` when a
   widget does not supply its own placeholder builder, and fixes the
   `clipBehavior` diagnostic's default value.
+* Reuses decoded SVGs for equivalent HTTP request headers regardless of map
+  allocation or insertion order, while isolating distinct injected HTTP clients
+  and protecting cached keys from later header-map mutations.
+* Limits retained compiled SVG data to 32 MiB by default, evicting the LRU
+  entries when either the entry count or byte budget is exceeded. Both limits
+  are configurable and byte usage is exposed for diagnostics.
 * Removes failed SVG decodes from the pending cache so that transient failures
   can be retried, and prevents invalidated pending loads from repopulating the
   cache after `clear` or `evict`.
