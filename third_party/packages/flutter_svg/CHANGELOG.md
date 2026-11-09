@@ -1,8 +1,14 @@
 ## 2.3.3
 
+<<<<<<< HEAD
 * Reuses decoded SVGs for equivalent HTTP request headers regardless of map
   allocation or insertion order, while isolating distinct injected HTTP clients
   and protecting cached keys from later header-map mutations.
+=======
+* Removes failed SVG decodes from the pending cache so that transient failures
+  can be retried, and prevents invalidated pending loads from repopulating the
+  cache after `clear` or `evict`.
+>>>>>>> origin/main
 
 ## 2.3.2
 
