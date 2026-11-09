@@ -39,7 +39,7 @@ void main() {
       await file.writeAsString(_svg);
       final fileLoader = SvgFileLoader(file);
       final memoryLoader = SvgBytesLoader(Uint8List.fromList(utf8.encode(_svg)));
-      final stringLoader = const SvgStringLoader(_svg);
+      const stringLoader = SvgStringLoader(_svg);
 
       final ByteData fromFile = await fileLoader.loadBytes(null);
       final ByteData fromMemory = await memoryLoader.loadBytes(null);
