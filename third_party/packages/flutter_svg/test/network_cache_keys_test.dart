@@ -82,7 +82,7 @@ void main() {
     // Reconstructing the original request recovers the same stable key.
     final SvgCacheKey originalAgain = const SvgNetworkLoader(
       'https://example.com/logo.svg',
-      headers: const <String, String>{'Authorization': 'old'},
+      headers: <String, String>{'Authorization': 'old'},
     ).cacheKey(null);
     expect(original, originalAgain);
   });
