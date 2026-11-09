@@ -1,5 +1,8 @@
 ## 2.3.3
 
+* Preserves explicit SVG dimensions while loading when the global placeholder
+  builder has not been customized.
+
 * Uses the configured default placeholder builder when no widget-specific placeholder is supplied.
 
 ## 2.3.2

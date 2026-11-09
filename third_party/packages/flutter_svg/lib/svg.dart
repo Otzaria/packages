@@ -443,7 +443,9 @@ class SvgPicture extends StatelessWidget {
 
   /// The default placeholder for a SVG that may take time to parse or
   /// retrieve, e.g. from a network location.
-  static WidgetBuilder defaultPlaceholderBuilder = (BuildContext ctx) => const LimitedBox();
+  static WidgetBuilder defaultPlaceholderBuilder = _defaultPlaceholderBuilder;
+
+  static Widget _defaultPlaceholderBuilder(BuildContext context) => const LimitedBox();
 
   /// If specified, the width to use for the SVG.  If unspecified, the SVG
   /// will take the width of its parent.
@@ -550,7 +552,12 @@ class SvgPicture extends StatelessWidget {
       errorBuilder: errorBuilder,
       imageBuilder: imageBuilder,
       colorFilter: colorFilter,
-      placeholderBuilder: placeholderBuilder ?? defaultPlaceholderBuilder,
+      // Keep vector_graphics' dimension-reserving fallback unless a builder is configured.
+      placeholderBuilder:
+          placeholderBuilder ??
+          (defaultPlaceholderBuilder == _defaultPlaceholderBuilder
+              ? null
+              : defaultPlaceholderBuilder),
       strategy: renderingStrategy,
       clipViewbox: !allowDrawingOutsideViewBox,
       matchTextDirection: matchTextDirection,
