@@ -23,12 +23,14 @@ jobs:
       - name: Resolve dependencies
         working-directory: third_party/packages/flutter_svg
         run: flutter pub get
-      - name: Check formatting
-        working-directory: third_party/packages/flutter_svg
-        run: dart format --output=none --set-exit-if-changed lib test
       - name: Static analysis
         working-directory: third_party/packages/flutter_svg
         run: flutter analyze
       - name: Run all flutter_svg tests
         working-directory: third_party/packages/flutter_svg
         run: flutter test
+      - name: Check formatting
+        working-directory: third_party/packages/flutter_svg
+        run: |
+          dart format lib test
+          git diff --exit-code -- lib test
