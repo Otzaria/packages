@@ -1,5 +1,8 @@
 ## Unreleased (Otzaria fork)
 
+* Limits retained compiled SVG data to 32 MiB by default, evicting the LRU
+  entries when either the entry count or byte budget is exceeded. Both limits
+  are configurable and byte usage is exposed for diagnostics.
 * Removes failed SVG decodes from the pending cache so that transient failures
   can be retried, and prevents invalidated pending loads from repopulating the
   cache after `clear` or `evict`.
