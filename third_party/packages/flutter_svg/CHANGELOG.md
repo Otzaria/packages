@@ -1,16 +1,11 @@
-<<<<<<< HEAD
 ## 2.3.3
 
 * Uses the globally configured `SvgPicture.defaultPlaceholderBuilder` when a
   widget does not supply its own placeholder builder, and fixes the
   `clipBehavior` diagnostic's default value.
-=======
-## 2.3.3
-
 * Removes failed SVG decodes from the pending cache so that transient failures
   can be retried, and prevents invalidated pending loads from repopulating the
   cache after `clear` or `evict`.
->>>>>>> origin/main
 
 ## 2.3.2
 
