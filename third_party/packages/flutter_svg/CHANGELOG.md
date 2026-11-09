@@ -1,3 +1,9 @@
+## Unreleased (Otzaria fork)
+
+* Reuses decoded SVGs for equivalent HTTP request headers regardless of map
+  allocation or insertion order, while isolating distinct injected HTTP clients
+  and protecting cached keys from later header-map mutations.
+
 ## 2.3.2
 
 * Fixes `SvgNetworkLoader` parsing the body of a non-2xx HTTP response as SVG.
