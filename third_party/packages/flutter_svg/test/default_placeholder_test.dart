@@ -18,6 +18,87 @@ void main() {
     SvgPicture.defaultPlaceholderBuilder = originalBuilder;
   });
 
+  for (final size in <Size>[const Size(48, 36), const Size(48, 0), const Size(0, 36)]) {
+    testWidgets('the original default reserves $size while loading', (WidgetTester tester) async {
+      final response = Completer<ByteData>();
+      final picture = SvgPicture(
+        _DeferredLoader(response.future),
+        width: size.width == 0 ? null : size.width,
+        height: size.height == 0 ? null : size.height,
+      );
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.rtl,
+          child: Center(child: picture),
+        ),
+      );
+      expect(tester.getSize(find.byWidget(picture)), size);
+    });
+  }
+
+  testWidgets('the original default reserves logo height beside Hebrew text', (
+    WidgetTester tester,
+  ) async {
+    final response = Completer<ByteData>();
+    final row = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        SvgPicture(_DeferredLoader(response.future), height: 36),
+        const SizedBox(width: 8),
+        const Text('ים החכמה'),
+      ],
+    );
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.rtl,
+        child: DefaultTextStyle(
+          style: const TextStyle(fontSize: 16),
+          child: Center(child: row),
+        ),
+      ),
+    );
+    expect(tester.getSize(find.byWidget(row)).height, 36);
+  });
+
+  testWidgets('restoring the original global builder restores dimension reservation', (
+    WidgetTester tester,
+  ) async {
+    final response = Completer<ByteData>();
+    final picture = SvgPicture(_DeferredLoader(response.future), width: 48, height: 36);
+    SvgPicture.defaultPlaceholderBuilder = (BuildContext context) =>
+        const SizedBox(width: 7, height: 9);
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.rtl,
+        child: Center(child: picture),
+      ),
+    );
+    expect(tester.getSize(find.byWidget(picture)), const Size(7, 9));
+    SvgPicture.defaultPlaceholderBuilder = originalBuilder;
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.rtl,
+        child: Center(child: SvgPicture(_DeferredLoader(response.future), width: 48, height: 36)),
+      ),
+    );
+    expect(tester.getSize(find.byType(SvgPicture)), const Size(48, 36));
+  });
+
+  testWidgets('a configured empty global builder keeps its own layout', (
+    WidgetTester tester,
+  ) async {
+    final response = Completer<ByteData>();
+    SvgPicture.defaultPlaceholderBuilder = (BuildContext context) => const LimitedBox();
+    final picture = SvgPicture(_DeferredLoader(response.future), width: 48, height: 36);
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.rtl,
+        child: Center(child: picture),
+      ),
+    );
+    expect(tester.getSize(find.byWidget(picture)), Size.zero);
+  });
+
   test('clip diagnostics hide the default and report a non-default value', () {
     expect(SvgPicture.string('<svg/>').toString(), isNot(contains('clipBehavior')));
     expect(
