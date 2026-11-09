@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -34,13 +33,13 @@ void main() {
   });
 
   test('file and memory loaders still produce compiled data', () async {
-    final dir = await Directory.systemTemp.createTemp('flutter_svg_isolate');
+    final Directory dir = await Directory.systemTemp.createTemp('flutter_svg_isolate');
     try {
       final file = File('${dir.path}/icon.svg');
       await file.writeAsString(_svg);
       final fileLoader = SvgFileLoader(file);
       final memoryLoader = SvgBytesLoader(Uint8List.fromList(utf8.encode(_svg)));
-      final stringLoader = SvgStringLoader(_svg);
+      final stringLoader = const SvgStringLoader(_svg);
 
       final ByteData fromFile = await fileLoader.loadBytes(null);
       final ByteData fromMemory = await memoryLoader.loadBytes(null);
