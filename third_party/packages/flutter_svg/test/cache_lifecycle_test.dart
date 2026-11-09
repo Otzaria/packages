@@ -11,10 +11,7 @@ void main() {
     final Future<ByteData> pending = cache.putIfAbsent('icon', () => firstLoad.future);
 
     expect(
-      identical(
-        pending,
-        cache.putIfAbsent('icon', () => throw StateError('duplicate load')),
-      ),
+      identical(pending, cache.putIfAbsent('icon', () => throw StateError('duplicate load'))),
       isTrue,
     );
 
