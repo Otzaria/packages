@@ -1,0 +1,36 @@
+name: flutter_svg QA
+
+on:
+  pull_request:
+    paths:
+      - 'third_party/packages/flutter_svg/**'
+      - '.github/workflows/flutter_svg_qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  analyze-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Resolve dependencies
+        working-directory: third_party/packages/flutter_svg
+        run: flutter pub get
+      - name: Static analysis
+        working-directory: third_party/packages/flutter_svg
+        run: flutter analyze
+      - name: Run all flutter_svg tests
+        working-directory: third_party/packages/flutter_svg
+        run: flutter test
+      - name: Check formatting
+        working-directory: third_party/packages/flutter_svg
+        run: |
+          dart format lib test
+          git diff --exit-code -- lib test

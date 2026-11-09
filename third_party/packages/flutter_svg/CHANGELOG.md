@@ -1,3 +1,9 @@
+## 2.3.3
+
+* Removes failed SVG decodes from the pending cache so that transient failures
+  can be retried, and prevents invalidated pending loads from repopulating the
+  cache after `clear` or `evict`.
+
 ## 2.3.2
 
 * Fixes `SvgNetworkLoader` parsing the body of a non-2xx HTTP response as SVG.
