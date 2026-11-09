@@ -1,4 +1,4 @@
-## Unreleased (Otzaria fork)
+## 2.3.3
 
 * Reuses decoded SVGs for equivalent HTTP request headers regardless of map
   allocation or insertion order, while isolating distinct injected HTTP clients
