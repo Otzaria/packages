@@ -1,5 +1,8 @@
 ## 2.4.0
 
+* Reuses decoded SVGs for equivalent HTTP request headers regardless of map
+  allocation or insertion order, while isolating distinct injected HTTP clients
+  and protecting cached keys from later header-map mutations.
 * Limits retained compiled SVG data to 32 MiB by default, evicting the LRU
   entries when either the entry count or byte budget is exceeded. Both limits
   are configurable and byte usage is exposed for diagnostics.
