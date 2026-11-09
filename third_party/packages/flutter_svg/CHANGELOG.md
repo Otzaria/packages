@@ -1,5 +1,8 @@
 ## 2.4.0
 
+* Uses the globally configured `SvgPicture.defaultPlaceholderBuilder` when a
+  widget does not supply its own placeholder builder, and fixes the
+  `clipBehavior` diagnostic's default value.
 * Reuses decoded SVGs for equivalent HTTP request headers regardless of map
   allocation or insertion order, while isolating distinct injected HTTP clients
   and protecting cached keys from later header-map mutations.
