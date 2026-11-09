@@ -1,16 +1,11 @@
-<<<<<<< HEAD
 ## 2.3.3
 
 * Avoids sending asset bundles, HTTP clients, or other loader state across
   compute isolates. Built-in loaders retain UTF-8 decoding and file I/O on the
   isolate while passing only the required SVG source and compile options.
-=======
-## 2.3.3
-
 * Removes failed SVG decodes from the pending cache so that transient failures
   can be retried, and prevents invalidated pending loads from repopulating the
   cache after `clear` or `evict`.
->>>>>>> origin/main
 
 ## 2.3.2
 
