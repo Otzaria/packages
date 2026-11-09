@@ -6,8 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('failed loads are removed from the pending cache and can be retried', () async {
-    final Cache cache = Cache();
-    final Completer<ByteData> firstLoad = Completer<ByteData>();
+    final cache = Cache();
+    final firstLoad = Completer<ByteData>();
     final Future<ByteData> pending = cache.putIfAbsent('icon', () => firstLoad.future);
 
     expect(
@@ -22,7 +22,7 @@ void main() {
     firstLoad.completeError(StateError('temporarily unavailable'));
     await expectedFailure;
 
-    final ByteData recovered = ByteData(2);
+    final recovered = ByteData(2);
     final ByteData result = await cache.putIfAbsent(
       'icon',
       () => Future<ByteData>.value(recovered),
@@ -32,13 +32,13 @@ void main() {
   });
 
   test('clear prevents pending loads from repopulating stale entries', () async {
-    final Cache cache = Cache();
-    final Completer<ByteData> oldLoad = Completer<ByteData>();
+    final cache = Cache();
+    final oldLoad = Completer<ByteData>();
     final Future<ByteData> oldFuture = cache.putIfAbsent('icon', () => oldLoad.future);
 
     cache.clear();
 
-    final ByteData replacement = ByteData(3);
+    final replacement = ByteData(3);
     expect(
       identical(
         await cache.putIfAbsent('icon', () => Future<ByteData>.value(replacement)),
@@ -59,8 +59,8 @@ void main() {
   });
 
   test('evict invalidates in-flight loads as well as completed loads', () async {
-    final Cache cache = Cache();
-    final Completer<ByteData> oldLoad = Completer<ByteData>();
+    final cache = Cache();
+    final oldLoad = Completer<ByteData>();
     final Future<ByteData> oldFuture = cache.putIfAbsent('icon', () => oldLoad.future);
 
     expect(cache.evict('icon'), isTrue);
@@ -69,7 +69,7 @@ void main() {
     await oldFuture;
     expect(cache.count, 0);
 
-    final ByteData fresh = ByteData(2);
+    final fresh = ByteData(2);
     await cache.putIfAbsent('icon', () => Future<ByteData>.value(fresh));
     expect(cache.count, 1);
     expect(cache.evict('icon'), isTrue);
@@ -77,8 +77,8 @@ void main() {
   });
 
   test('eviction remains safe if a new load returns the same Future', () async {
-    final Cache cache = Cache();
-    final Completer<ByteData> shared = Completer<ByteData>();
+    final cache = Cache();
+    final shared = Completer<ByteData>();
     final Future<ByteData> first = cache.putIfAbsent('icon', () => shared.future);
     expect(cache.evict('icon'), isTrue);
     final Future<ByteData> second = cache.putIfAbsent('icon', () => shared.future);
