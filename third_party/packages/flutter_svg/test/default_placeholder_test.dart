@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -15,6 +16,41 @@ void main() {
 
   tearDown(() {
     SvgPicture.defaultPlaceholderBuilder = originalBuilder;
+  });
+
+  test('clip diagnostics hide the default and report a non-default value', () {
+    expect(SvgPicture.string('<svg/>').toString(), isNot(contains('clipBehavior')));
+    expect(
+      SvgPicture.string('<svg/>', clipBehavior: Clip.none).toString(),
+      contains('clipBehavior: none'),
+    );
+  });
+
+  testWidgets('an error builder replaces the global loading placeholder', (
+    WidgetTester tester,
+  ) async {
+    final response = Completer<ByteData>();
+    SvgPicture.defaultPlaceholderBuilder = (BuildContext context) {
+      return const SizedBox(key: ValueKey<String>('global-placeholder'));
+    };
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: SvgPicture(
+          _DeferredLoader(response.future),
+          width: 24,
+          height: 24,
+          errorBuilder: (BuildContext context, Object error, StackTrace stackTrace) {
+            return const SizedBox(key: ValueKey<String>('error'));
+          },
+        ),
+      ),
+    );
+    expect(find.byKey(const ValueKey<String>('global-placeholder')), findsOneWidget);
+    response.completeError(StateError('unavailable'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey<String>('global-placeholder')), findsNothing);
+    expect(find.byKey(const ValueKey<String>('error')), findsOneWidget);
   });
 
   testWidgets('the global default placeholder is shown during loading', (
@@ -72,6 +108,15 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey<String>('explicit-placeholder')), findsNothing);
   });
+}
+
+class _DeferredLoader extends BytesLoader {
+  const _DeferredLoader(this.response);
+
+  final Future<ByteData> response;
+
+  @override
+  Future<ByteData> loadBytes(BuildContext? context) => response;
 }
 
 class _DeferredClient extends Fake implements http.Client {
