@@ -63,7 +63,7 @@ void main() {
   test('a zero-byte budget disables caching and invalidates pending data', () async {
     final cache = Cache();
     final pending = Completer<ByteData>();
-    final oldLoad = cache.putIfAbsent('old', () => pending.future);
+    final Future<ByteData> oldLoad = cache.putIfAbsent('old', () => pending.future);
 
     cache.maximumByteSize = 0;
     pending.complete(ByteData(5));
