@@ -83,6 +83,55 @@ void main() {
     ).cacheKey(null);
     expect(original, originalAgain);
   });
+
+  test('mutating headers preserves existing cache entries and eviction', () async {
+    final client = _CountingSvgClient();
+    final headers = <String, String>{'Authorization': 'old'};
+    final loader = SvgNetworkLoader(
+      'https://example.com/logo.svg',
+      headers: headers,
+      httpClient: client,
+    );
+    final SvgCacheKey originalKey = loader.cacheKey(null);
+    final ByteData original = await loader.loadBytes(null);
+    headers['Authorization'] = 'new';
+    await loader.loadBytes(null);
+    final originalLoader = SvgNetworkLoader(
+      'https://example.com/logo.svg',
+      headers: const <String, String>{'Authorization': 'old'},
+      httpClient: client,
+    );
+
+    expect(identical(await originalLoader.loadBytes(null), original), isTrue);
+    expect(client.requests, 2);
+    expect(svg.cache.evict(originalKey), isTrue);
+    expect(svg.cache.count, 1);
+  });
+
+  test('equivalent concurrent requests deduplicate but themes stay isolated', () async {
+    final client = _CountingSvgClient();
+    final first = SvgNetworkLoader(
+      'https://example.com/logo.svg',
+      headers: const <String, String>{'Accept': 'image/svg+xml'},
+      httpClient: client,
+    );
+    final equivalent = SvgNetworkLoader(
+      'https://example.com/logo.svg',
+      headers: Map<String, String>.of(first.headers!),
+      httpClient: client,
+    );
+    final differentTheme = SvgNetworkLoader(
+      'https://example.com/logo.svg',
+      headers: first.headers,
+      theme: const SvgTheme(fontSize: 20),
+      httpClient: client,
+    );
+    final Future<ByteData> pending = first.loadBytes(null);
+    expect(identical(equivalent.loadBytes(null), pending), isTrue);
+    await Future.wait(<Future<ByteData>>[pending, differentTheme.loadBytes(null)]);
+    expect(client.requests, 2);
+    expect(svg.cache.count, 2);
+  });
 }
 
 class _CountingSvgClient extends http.BaseClient {
