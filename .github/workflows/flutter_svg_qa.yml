@@ -29,6 +29,9 @@ jobs:
       - name: Run all flutter_svg tests
         working-directory: third_party/packages/flutter_svg
         run: flutter test
+      - name: Test actual isolate transfers in release-mode VM
+        working-directory: third_party/packages/flutter_svg
+        run: flutter test --dart-define=dart.vm.product=true test/isolate_safe_loaders_test.dart
       - name: Check formatting
         working-directory: third_party/packages/flutter_svg
         run: |
