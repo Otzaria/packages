@@ -139,9 +139,9 @@ class _SvgCompileRequest {
 // loader (and its possibly non-sendable asset bundle or HTTP client).
 ByteData _compileSvg(_SvgCompileRequest request) {
   final String xml = switch (request.source) {
-    _SvgTextSource(:final xml) => xml,
-    _SvgByteSource(:final bytes) => utf8.decode(bytes, allowMalformed: true),
-    _SvgFileSource(:final file) => utf8.decode(file.readAsBytesSync(), allowMalformed: true),
+    _SvgTextSource(:final String xml) => xml,
+    _SvgByteSource(:final Uint8List bytes) => utf8.decode(bytes, allowMalformed: true),
+    _SvgFileSource(:final File file) => utf8.decode(file.readAsBytesSync(), allowMalformed: true),
   };
   return vg
       .encodeSvg(
