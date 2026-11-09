@@ -36,7 +36,7 @@ void main() {
   test('file and memory loaders still produce compiled data', () async {
     final dir = await Directory.systemTemp.createTemp('flutter_svg_isolate');
     try {
-      final File file = File('${dir.path}/icon.svg');
+      final file = File('${dir.path}/icon.svg');
       await file.writeAsString(_svg);
       final fileLoader = SvgFileLoader(file);
       final memoryLoader = SvgBytesLoader(Uint8List.fromList(utf8.encode(_svg)));
@@ -62,6 +62,7 @@ class _FutureHoldingBundle extends Fake implements AssetBundle {
 
   @override
   Future<ByteData> load(String key) async {
+    assert(!_unsendableState.isCompleted);
     loads++;
     return Uint8List.fromList(utf8.encode(_svg)).buffer.asByteData();
   }
@@ -73,6 +74,7 @@ class _FutureHoldingClient extends Fake implements http.Client {
 
   @override
   Future<http.Response> get(Uri url, {Map<String, String>? headers}) async {
+    assert(!_unsendableState.isCompleted);
     requests++;
     return http.Response(_svg, 200);
   }
