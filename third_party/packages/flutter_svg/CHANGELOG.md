@@ -1,4 +1,4 @@
-## Unreleased (Otzaria fork)
+## 2.3.3
 
 * Removes failed SVG decodes from the pending cache so that transient failures
   can be retried, and prevents invalidated pending loads from repopulating the
