@@ -1,4 +1,4 @@
-## Unreleased (Otzaria fork)
+## 2.3.3
 
 * Limits retained compiled SVG data to 32 MiB by default, evicting the LRU
   entries when either the entry count or byte budget is exceeded. Both limits

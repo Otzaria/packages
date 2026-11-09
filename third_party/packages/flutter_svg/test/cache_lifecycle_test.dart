@@ -85,4 +85,42 @@ void main() {
     await second;
     expect(cache.count, 1);
   });
+
+  test('an invalidated failure leaves the replacement pending load intact', () async {
+    final cache = Cache();
+    final obsolete = Completer<ByteData>();
+    final current = Completer<ByteData>();
+    final Future<ByteData> oldFuture = cache.putIfAbsent('icon', () => obsolete.future);
+    final Future<void> expectedFailure = expectLater(oldFuture, throwsStateError);
+    cache.evict('icon');
+    final Future<ByteData> currentFuture = cache.putIfAbsent('icon', () => current.future);
+
+    obsolete.completeError(StateError('obsolete request failed'));
+    await expectedFailure;
+    expect(
+      identical(currentFuture, cache.putIfAbsent('icon', () => throw StateError('duplicate'))),
+      isTrue,
+    );
+
+    final fresh = ByteData(2);
+    current.complete(fresh);
+    await currentFuture;
+    expect(await cache.putIfAbsent('icon', () => throw StateError('missing cache')), same(fresh));
+  });
+
+  test('disabling and restoring cache invalidates requests from before disabling', () async {
+    final cache = Cache();
+    final obsolete = Completer<ByteData>();
+    final Future<ByteData> oldFuture = cache.putIfAbsent('icon', () => obsolete.future);
+    cache.maximumSize = 0;
+    cache.maximumSize = 100;
+
+    obsolete.complete(ByteData(1));
+    await oldFuture;
+    expect(cache.count, 0);
+
+    final fresh = ByteData(2);
+    expect(await cache.putIfAbsent('icon', () => SynchronousFuture<ByteData>(fresh)), same(fresh));
+    expect(cache.count, 1);
+  });
 }
