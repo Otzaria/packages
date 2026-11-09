@@ -53,6 +53,75 @@ void main() {
       await dir.delete(recursive: true);
     }
   });
+
+  test('built-in loader subclasses retain their provideSvg override', () async {
+    final Directory dir = await Directory.systemTemp.createTemp('flutter_svg_subclass');
+    try {
+      final file = File('${dir.path}/icon.svg');
+      await file.writeAsString('not SVG');
+      final loaders = <SvgLoader<Object?>>[
+        const _CustomStringLoader(),
+        _CustomBytesLoader(),
+        _CustomFileLoader(file),
+        _CustomAssetLoader(_InvalidBundle()),
+        _CustomNetworkLoader(_InvalidClient()),
+      ];
+      for (final loader in loaders) {
+        final ByteData bytes = await loader.loadBytes(null);
+        expect(bytes.lengthInBytes, greaterThan(0), reason: '${loader.runtimeType}');
+      }
+    } finally {
+      await dir.delete(recursive: true);
+    }
+  });
+}
+
+class _CustomStringLoader extends SvgStringLoader {
+  const _CustomStringLoader() : super('not SVG');
+
+  @override
+  String provideSvg(void message) => _svg;
+}
+
+class _CustomBytesLoader extends SvgBytesLoader {
+  _CustomBytesLoader() : super(Uint8List.fromList(utf8.encode('not SVG')));
+
+  @override
+  String provideSvg(void message) => _svg;
+}
+
+class _CustomFileLoader extends SvgFileLoader {
+  const _CustomFileLoader(super.file);
+
+  @override
+  String provideSvg(void message) => _svg;
+}
+
+class _CustomAssetLoader extends SvgAssetLoader {
+  const _CustomAssetLoader(AssetBundle bundle) : super('icon.svg', assetBundle: bundle);
+
+  @override
+  String provideSvg(ByteData? message) => _svg;
+}
+
+class _CustomNetworkLoader extends SvgNetworkLoader {
+  const _CustomNetworkLoader(http.Client client)
+    : super('https://example.com/icon.svg', httpClient: client);
+
+  @override
+  String provideSvg(Uint8List? message) => _svg;
+}
+
+class _InvalidBundle extends Fake implements AssetBundle {
+  @override
+  Future<ByteData> load(String key) async =>
+      Uint8List.fromList(utf8.encode('not SVG')).buffer.asByteData();
+}
+
+class _InvalidClient extends Fake implements http.Client {
+  @override
+  Future<http.Response> get(Uri url, {Map<String, String>? headers}) async =>
+      http.Response('not SVG', 200);
 }
 
 class _FutureHoldingBundle extends Fake implements AssetBundle {

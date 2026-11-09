@@ -102,9 +102,7 @@ class _DelegateVgColorMapper extends vg.ColorMapper {
   }
 }
 
-// Only these lightweight inputs cross the compute isolate boundary. Never
-// transfer a SvgLoader: it may retain an AssetBundle, an HTTP client, or other
-// objects that are not sendable between isolates.
+// Transfer only source data: loaders can retain non-sendable bundles or clients.
 sealed class _SvgSource {
   const _SvgSource();
 }
@@ -204,9 +202,20 @@ abstract class SvgLoader<T> extends BytesLoader {
     final vg.SvgTheme theme = getTheme(context).toVgTheme();
     final ColorMapper? mapper = colorMapper;
     return prepareMessage(context).then((T? message) {
+      // Subclasses may override provideSvg; only exact built-ins can bypass it.
+      final bool isBuiltIn =
+          runtimeType == SvgStringLoader ||
+          runtimeType == SvgBytesLoader ||
+          runtimeType == SvgFileLoader ||
+          runtimeType == SvgAssetLoader ||
+          runtimeType == SvgNetworkLoader;
       return compute(
         _compileSvg,
-        _SvgCompileRequest(_sourceFor(message), theme, mapper),
+        _SvgCompileRequest(
+          isBuiltIn ? _sourceFor(message) : _SvgTextSource(provideSvg(message)),
+          theme,
+          mapper,
+        ),
         debugLabel: 'Load Bytes',
       );
     });
