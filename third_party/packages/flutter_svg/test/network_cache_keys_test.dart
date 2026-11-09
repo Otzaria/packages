@@ -13,15 +13,15 @@ void main() {
   });
 
   test('equivalent HTTP header maps share one compiled SVG', () async {
-    final _CountingSvgClient client = _CountingSvgClient();
-    final SvgNetworkLoader first = SvgNetworkLoader(
+    final client = _CountingSvgClient();
+    final first = SvgNetworkLoader(
       'https://example.com/logo.svg',
-      headers: <String, String>{'Accept': 'image/svg+xml', 'X-Test': 'yes'},
+      headers: const <String, String>{'Accept': 'image/svg+xml', 'X-Test': 'yes'},
       httpClient: client,
     );
-    final SvgNetworkLoader second = SvgNetworkLoader(
+    final second = SvgNetworkLoader(
       'https://example.com/logo.svg',
-      headers: <String, String>{'X-Test': 'yes', 'Accept': 'image/svg+xml'},
+      headers: const <String, String>{'X-Test': 'yes', 'Accept': 'image/svg+xml'},
       httpClient: client,
     );
 
@@ -36,21 +36,21 @@ void main() {
   });
 
   test('different headers or injected clients cannot share network data', () async {
-    final _CountingSvgClient firstClient = _CountingSvgClient();
-    final _CountingSvgClient secondClient = _CountingSvgClient();
-    final SvgNetworkLoader first = SvgNetworkLoader(
+    final firstClient = _CountingSvgClient();
+    final secondClient = _CountingSvgClient();
+    final first = SvgNetworkLoader(
       'https://example.com/logo.svg',
-      headers: <String, String>{'Authorization': 'A'},
+      headers: const <String, String>{'Authorization': 'A'},
       httpClient: firstClient,
     );
-    final SvgNetworkLoader differentHeader = SvgNetworkLoader(
+    final differentHeader = SvgNetworkLoader(
       'https://example.com/logo.svg',
-      headers: <String, String>{'Authorization': 'B'},
+      headers: const <String, String>{'Authorization': 'B'},
       httpClient: firstClient,
     );
-    final SvgNetworkLoader differentClient = SvgNetworkLoader(
+    final differentClient = SvgNetworkLoader(
       'https://example.com/logo.svg',
-      headers: <String, String>{'Authorization': 'A'},
+      headers: const <String, String>{'Authorization': 'A'},
       httpClient: secondClient,
     );
 
@@ -68,8 +68,8 @@ void main() {
   });
 
   test('cache keys snapshot mutable request headers', () {
-    final Map<String, String> headers = <String, String>{'Authorization': 'old'};
-    final SvgNetworkLoader loader = SvgNetworkLoader(
+    final headers = <String, String>{'Authorization': 'old'};
+    final loader = SvgNetworkLoader(
       'https://example.com/logo.svg',
       headers: headers,
     );
@@ -80,9 +80,9 @@ void main() {
     expect(original, isNot(equals(changed)));
 
     // Reconstructing the original request recovers the same stable key.
-    final SvgCacheKey originalAgain = SvgNetworkLoader(
+    final SvgCacheKey originalAgain = const SvgNetworkLoader(
       'https://example.com/logo.svg',
-      headers: <String, String>{'Authorization': 'old'},
+      headers: const <String, String>{'Authorization': 'old'},
     ).cacheKey(null);
     expect(original, originalAgain);
   });
