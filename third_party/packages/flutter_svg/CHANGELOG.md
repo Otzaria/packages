@@ -1,3 +1,9 @@
+## Unreleased (Otzaria fork)
+
+* Uses the globally configured `SvgPicture.defaultPlaceholderBuilder` when a
+  widget does not supply its own placeholder builder, and fixes the
+  `clipBehavior` diagnostic's default value.
+
 ## 2.3.2
 
 * Fixes `SvgNetworkLoader` parsing the body of a non-2xx HTTP response as SVG.
