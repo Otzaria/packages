@@ -66,7 +66,7 @@ class Cache {
     }
   }
 
-  /// Evicts all entries from the cache.
+  /// Evicts all completed entries and invalidates pending loads.
   ///
   /// This is useful if, for instance, the root asset bundle has been updated
   /// and therefore new images must be obtained.
@@ -76,7 +76,7 @@ class Cache {
     _currentByteSize = 0;
   }
 
-  /// Evicts a single entry from the cache, returning true if successful.
+  /// Evicts a completed entry or invalidates its pending load, returning true if found.
   bool evict(Object key) {
     final hadPending = _pending.remove(key) != null;
     final hadCached = _remove(key) != null;
